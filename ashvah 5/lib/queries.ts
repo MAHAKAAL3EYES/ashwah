@@ -6,7 +6,6 @@ import type {
   HeroContent,
   StatItem,
   ContactContent,
-  SiteSetting,
 } from "@/types/database";
 
 /**
@@ -18,7 +17,8 @@ import type {
 // ----- Categories
 export async function getCategories(): Promise<Category[]> {
   try {
-    const supabase = createClient();
+    const supabase = createClient() as any;
+
     const { data, error } = await supabase
       .from("categories")
       .select("*")
@@ -26,6 +26,7 @@ export async function getCategories(): Promise<Category[]> {
       .order("display_order", { ascending: true });
 
     if (error || !data) return FALLBACK_CATEGORIES;
+
     return data as Category[];
   } catch {
     return FALLBACK_CATEGORIES;
@@ -37,7 +38,8 @@ export async function getStarProducts(): Promise<
   Array<Product & { primary_image_url: string | null }>
 > {
   try {
-    const supabase = createClient();
+    const supabase = createClient() as any;
+
     const { data, error } = await supabase
       .from("products")
       .select(`*, product_images ( url, is_primary, display_order )`)
@@ -48,17 +50,21 @@ export async function getStarProducts(): Promise<
 
     if (error || !data) return FALLBACK_STAR_PRODUCTS;
 
-    return data.map((p: any) => {
+    return (data as any[]).map((p) => {
       const images = (p.product_images ?? []) as Array<{
         url: string;
         is_primary: boolean;
         display_order: number;
       }>;
+
       const primary =
         images.find((i) => i.is_primary)?.url ??
-        images.sort((a, b) => a.display_order - b.display_order)[0]?.url ??
+        [...images].sort((a, b) => a.display_order - b.display_order)[0]
+          ?.url ??
         null;
+
       const { product_images, ...rest } = p;
+
       return { ...rest, primary_image_url: primary };
     });
   } catch {
@@ -69,7 +75,8 @@ export async function getStarProducts(): Promise<
 // ----- Testimonials
 export async function getFeaturedTestimonials(): Promise<Testimonial[]> {
   try {
-    const supabase = createClient();
+    const supabase = createClient() as any;
+
     const { data, error } = await supabase
       .from("testimonials")
       .select("*")
@@ -79,6 +86,7 @@ export async function getFeaturedTestimonials(): Promise<Testimonial[]> {
       .limit(6);
 
     if (error || !data) return FALLBACK_TESTIMONIALS;
+
     return data as Testimonial[];
   } catch {
     return FALLBACK_TESTIMONIALS;
@@ -88,15 +96,19 @@ export async function getFeaturedTestimonials(): Promise<Testimonial[]> {
 // ----- Site settings (key/value)
 export async function getSiteSetting<T>(key: string, fallback: T): Promise<T> {
   try {
-    const supabase = createClient();
+    const supabase = createClient() as any;
+
     const { data, error } = await supabase
       .from("site_settings")
       .select("value")
       .eq("key", key)
       .single();
 
-    if (error || !data) return fallback;
-    return data.value as T;
+    const row = data as { value: unknown } | null;
+
+    if (error || !row) return fallback;
+
+    return row.value as T;
   } catch {
     return fallback;
   }
@@ -149,17 +161,61 @@ const FALLBACK_CONTACT: ContactContent = {
 };
 
 const FALLBACK_CATEGORIES: Category[] = [
-  ["t-shirts", "T-Shirts", "Lightweight knit fabrics engineered for breathability, print performance, and dimensional stability."],
-  ["sandos", "Sandos", "Featherweight, ribbed, and stretch-engineered fabrics for gym vests and sleeveless activewear."],
-  ["shorts", "Shorts", "Quick-dry, four-way stretch, and performance woven fabrics built for athletic and training shorts."],
-  ["joggers", "Joggers", "Loop-knit, fleece, and structured fabrics with the drape and stretch profile required for premium joggers."],
-  ["lowers", "Lowers", "The broadest category — trackpants, lowers, leggings, and athleisure bottoms in over a dozen constructions."],
-  ["cargos", "Cargos", "Durable woven and stretch-woven fabrics with the structure and abrasion resistance demanded by cargo wear."],
-  ["track-suits", "Track Suits", "Co-ordinated knit and woven fabrics suited for two-piece track suit construction."],
-  ["sweat-shirts", "Sweat Shirts", "Fleece, loop-back, and brushed knit fabrics for premium sweatshirts and hoodies."],
-  ["jackets", "Jackets", "Technical shells, woven outers, and bonded constructions engineered for jackets and outerwear."],
-  ["sports-kits", "Sports Kits", "Sublimation-ready knits, mesh, and interlock fabrics engineered for team kits and uniforms."],
-  ["lining-designing", "Lining & Designing", "Supporting fabrics — linings, mesh, accents, and designer overlays for finishing garments."],
+  [
+    "t-shirts",
+    "T-Shirts",
+    "Lightweight knit fabrics engineered for breathability, print performance, and dimensional stability.",
+  ],
+  [
+    "sandos",
+    "Sandos",
+    "Featherweight, ribbed, and stretch-engineered fabrics for gym vests and sleeveless activewear.",
+  ],
+  [
+    "shorts",
+    "Shorts",
+    "Quick-dry, four-way stretch, and performance woven fabrics built for athletic and training shorts.",
+  ],
+  [
+    "joggers",
+    "Joggers",
+    "Loop-knit, fleece, and structured fabrics with the drape and stretch profile required for premium joggers.",
+  ],
+  [
+    "lowers",
+    "Lowers",
+    "The broadest category — trackpants, lowers, leggings, and athleisure bottoms in over a dozen constructions.",
+  ],
+  [
+    "cargos",
+    "Cargos",
+    "Durable woven and stretch-woven fabrics with the structure and abrasion resistance demanded by cargo wear.",
+  ],
+  [
+    "track-suits",
+    "Track Suits",
+    "Co-ordinated knit and woven fabrics suited for two-piece track suit construction.",
+  ],
+  [
+    "sweat-shirts",
+    "Sweat Shirts",
+    "Fleece, loop-back, and brushed knit fabrics for premium sweatshirts and hoodies.",
+  ],
+  [
+    "jackets",
+    "Jackets",
+    "Technical shells, woven outers, and bonded constructions engineered for jackets and outerwear.",
+  ],
+  [
+    "sports-kits",
+    "Sports Kits",
+    "Sublimation-ready knits, mesh, and interlock fabrics engineered for team kits and uniforms.",
+  ],
+  [
+    "lining-designing",
+    "Lining & Designing",
+    "Supporting fabrics — linings, mesh, accents, and designer overlays for finishing garments.",
+  ],
 ].map(([slug, name, description], i) => ({
   id: `fallback-${slug}`,
   slug,
@@ -174,7 +230,7 @@ const FALLBACK_CATEGORIES: Category[] = [
   updated_at: "",
 }));
 
-const FALLBACK_STAR_PRODUCTS = [
+const FALLBACK_STAR_PRODUCTS: Array<Product & { primary_image_url: string | null }> = [
   {
     id: "fallback-reebok-knit-fabric",
     slug: "reebok-knit-fabric",
