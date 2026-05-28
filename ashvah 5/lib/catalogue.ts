@@ -48,7 +48,8 @@ async function fetchProducts({
   includeInactive: boolean;
 }): Promise<CatalogueProduct[]> {
   try {
-    const supabase = createClient();
+    const supabase = createClient() as any;
+
     let query = supabase
       .from("products")
       .select(
@@ -68,7 +69,8 @@ async function fetchProducts({
     if (error || !data) {
       return FALLBACK_ALL_PRODUCTS;
     }
-    return data.map(mapCatalogueRow);
+
+    return (data as any[]).map(mapCatalogueRow);
   } catch {
     return FALLBACK_ALL_PRODUCTS;
   }
@@ -83,6 +85,7 @@ export async function getProductBySlug(
   related: CatalogueProduct[];
 } | null> {
   let all: CatalogueProduct[];
+
   try {
     all = await getCatalogueProducts();
   } catch {
@@ -90,7 +93,10 @@ export async function getProductBySlug(
   }
 
   const product = all.find((p) => p.slug === slug);
-  if (!product) return null;
+
+  if (!product) {
+    return null;
+  }
 
   // Related: same category, different product, max 3
   const related = all
@@ -103,13 +109,16 @@ export async function getProductBySlug(
 
   // Images: try DB, else synthesize from the real asset config
   let images: ProductImage[] = [];
+
   try {
-    const supabase = createClient();
+    const supabase = createClient() as any;
+
     const { data } = await supabase
       .from("product_images")
       .select("*")
       .eq("product_id", product.id)
       .order("display_order", { ascending: true });
+
     images = (data as ProductImage[]) ?? [];
   } catch {
     images = [];
@@ -118,6 +127,7 @@ export async function getProductBySlug(
   // Fallback: build gallery from PRODUCT_IMAGES (real ashvah.in URLs)
   if (images.length === 0) {
     const urls = PRODUCT_IMAGES[product.slug] ?? [];
+
     images = urls.map((url, i) => ({
       id: `${product.slug}-img-${i}`,
       product_id: product.id,
@@ -138,16 +148,19 @@ export async function getCategoryBySlug(
   slug: string
 ): Promise<Category | null> {
   try {
-    const supabase = createClient();
+    const supabase = createClient() as any;
+
     const { data, error } = await supabase
       .from("categories")
       .select("*")
       .eq("slug", slug)
       .eq("is_active", true)
       .single();
+
     if (error || !data) {
       return FALLBACK_CATEGORIES_FULL.find((c) => c.slug === slug) ?? null;
     }
+
     return data as Category;
   } catch {
     return FALLBACK_CATEGORIES_FULL.find((c) => c.slug === slug) ?? null;
@@ -157,15 +170,22 @@ export async function getCategoryBySlug(
 /** All category slugs — for static generation */
 export async function getAllCategorySlugs(): Promise<string[]> {
   try {
-    const supabase = createClient();
+    const supabase = createClient() as any;
+
     const { data } = await supabase
       .from("categories")
       .select("slug")
       .eq("is_active", true);
-    if (data && data.length > 0) return data.map((c) => c.slug);
+
+    const rows = data as Array<{ slug: string }> | null;
+
+    if (rows && rows.length > 0) {
+      return rows.map((c) => c.slug);
+    }
   } catch {
     /* fall through */
   }
+
   return FALLBACK_CATEGORIES_FULL.map((c) => c.slug);
 }
 
@@ -187,6 +207,7 @@ function mapCatalogueRow(row: any): CatalogueProduct {
     is_primary: boolean;
     display_order: number;
   }>;
+
   const primary =
     images.find((i) => i.is_primary)?.url ??
     [...images].sort((a, b) => a.display_order - b.display_order)[0]?.url ??
@@ -196,11 +217,7 @@ function mapCatalogueRow(row: any): CatalogueProduct {
     .map((pc: any) => pc.categories)
     .filter(Boolean) as Array<{ id: string; slug: string; name: string }>;
 
-  const {
-    product_images,
-    product_categories,
-    ...rest
-  } = row;
+  const { product_images, product_categories, ...rest } = row;
 
   return {
     ...(rest as Product),
@@ -220,23 +237,30 @@ function applyFilters(
   if (filters.category) {
     out = out.filter((p) => p.category_slugs.includes(filters.category!));
   }
+
   if (filters.starOnly) {
     out = out.filter((p) => p.is_star);
   }
+
   if (filters.customizableOnly) {
     out = out.filter((p) => p.is_customizable);
   }
+
   if (filters.inStockOnly) {
     out = out.filter((p) => p.in_stock);
   }
+
   if (filters.useCase) {
     const uc = filters.useCase.toLowerCase();
+
     out = out.filter((p) =>
       (p.used_for ?? []).some((u) => u.toLowerCase().includes(uc))
     );
   }
+
   if (filters.search) {
     const q = filters.search.toLowerCase();
+
     out = out.filter(
       (p) =>
         p.name.toLowerCase().includes(q) ||
