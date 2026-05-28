@@ -15,6 +15,7 @@ function supabaseConfigured() {
 
 export async function POST(request: Request) {
   let payload: unknown;
+
   try {
     payload = await request.json();
   } catch {
@@ -22,6 +23,7 @@ export async function POST(request: Request) {
   }
 
   const parsed = enquirySchema.safeParse(payload);
+
   if (!parsed.success) {
     return NextResponse.json(
       { error: "Validation failed", issues: parsed.error.flatten() },
@@ -31,15 +33,15 @@ export async function POST(request: Request) {
 
   const { website, product_slug, ...data } = parsed.data;
 
-  // Honeypot — if the hidden 'website' field is filled, silently accept
+  // Honeypot — if the hidden 'website' field is filled, silently accept.
   if (website && website.length > 0) {
     return NextResponse.json({ ok: true });
   }
 
-  // If Supabase genuinely isn't configured (local dev), don't pretend to save.
-  // Return an explicit, honest status the client can surface.
+  // If Supabase genuinely isn't configured, do not pretend to save.
   if (!supabaseConfigured()) {
     console.warn("[enquiry] Supabase not configured — enquiry not persisted.");
+
     return NextResponse.json(
       {
         ok: false,
@@ -52,33 +54,47 @@ export async function POST(request: Request) {
   }
 
   const headers = request.headers;
+
   const ipAddress =
     headers.get("x-forwarded-for")?.split(",")[0].trim() ??
     headers.get("x-real-ip") ??
     null;
+
   const userAgent = headers.get("user-agent") ?? null;
   const referrer = headers.get("referer") ?? null;
 
   try {
     const supabase = createClient();
 
-    // Resolve product/category from slug, if provided
+    // Resolve product/category from slug, if provided.
     let product_id: string | null = null;
     let category_id: string | null = null;
+
+    type IdRow = { id: string };
+
     if (product_slug) {
-      const { data: prod } = await supabase
+      const { data: prodData } = await supabase
         .from("products")
         .select("id")
         .eq("slug", product_slug)
         .maybeSingle();
-      if (prod) product_id = prod.id;
-      else {
-        const { data: cat } = await supabase
+
+      const prod = prodData as IdRow | null;
+
+      if (prod?.id) {
+        product_id = prod.id;
+      } else {
+        const { data: catData } = await supabase
           .from("categories")
           .select("id")
           .eq("slug", product_slug)
           .maybeSingle();
-        if (cat) category_id = cat.id;
+
+        const cat = catData as IdRow | null;
+
+        if (cat?.id) {
+          category_id = cat.id;
+        }
       }
     }
 
@@ -102,10 +118,11 @@ export async function POST(request: Request) {
       referrer,
     });
 
-    // Production-correct: a configured-but-failing insert is a REAL error.
+    // Production-correct: a configured-but-failing insert is a real error.
     // Never silently swallow it — the lead must not vanish.
     if (error) {
       console.error("[enquiry] Supabase insert failed:", error.message);
+
       return NextResponse.json(
         {
           ok: false,
@@ -119,6 +136,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true });
   } catch (err) {
     console.error("[enquiry] unexpected error:", err);
+
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }
