@@ -1,20 +1,18 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
   images: {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "**.supabase.co",
+        hostname: "www.ashvah.in",
+        pathname: "/assets/uploads/**",
       },
       {
         protocol: "https",
-        hostname: "www.ashvah.in",
+        hostname: "ashvah.in",
+        pathname: "/assets/uploads/**",
       },
     ],
-  },
-  experimental: {
-    optimizePackageImports: ["lucide-react", "framer-motion"],
   },
 };
 
