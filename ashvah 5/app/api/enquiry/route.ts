@@ -64,33 +64,28 @@ export async function POST(request: Request) {
   const referrer = headers.get("referer") ?? null;
 
   try {
-    const supabase = createClient();
+    // Cast to any because the generated Supabase DB types are not wired correctly.
+    // Without this, TypeScript treats table rows as `never`.
+    const supabase = createClient() as any;
 
-    // Resolve product/category from slug, if provided.
     let product_id: string | null = null;
     let category_id: string | null = null;
 
-    type IdRow = { id: string };
-
     if (product_slug) {
-      const { data: prodData } = await supabase
+      const { data: prod } = await supabase
         .from("products")
         .select("id")
         .eq("slug", product_slug)
         .maybeSingle();
 
-      const prod = prodData as IdRow | null;
-
       if (prod?.id) {
         product_id = prod.id;
       } else {
-        const { data: catData } = await supabase
+        const { data: cat } = await supabase
           .from("categories")
           .select("id")
           .eq("slug", product_slug)
           .maybeSingle();
-
-        const cat = catData as IdRow | null;
 
         if (cat?.id) {
           category_id = cat.id;
@@ -98,7 +93,7 @@ export async function POST(request: Request) {
       }
     }
 
-    const { error } = await supabase.from("enquiries").insert({
+    const enquiryInsert = {
       name: data.name,
       phone: data.phone,
       email: data.email || null,
@@ -116,10 +111,10 @@ export async function POST(request: Request) {
       ip_address: ipAddress,
       user_agent: userAgent,
       referrer,
-    });
+    };
 
-    // Production-correct: a configured-but-failing insert is a real error.
-    // Never silently swallow it — the lead must not vanish.
+    const { error } = await supabase.from("enquiries").insert(enquiryInsert);
+
     if (error) {
       console.error("[enquiry] Supabase insert failed:", error.message);
 
