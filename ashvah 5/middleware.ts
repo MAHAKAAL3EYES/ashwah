@@ -1,9 +1,23 @@
-import { createServerClient } from "@supabase/ssr";
+import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import type { Database } from "@/types/database";
 
+type CookieToSet = {
+  name: string;
+  value: string;
+  options: CookieOptions;
+};
+
+type StaffUser = {
+  id: string;
+  is_active: boolean | null;
+  role: string | null;
+};
+
 export async function middleware(request: NextRequest) {
-  let response = NextResponse.next({ request });
+  let response = NextResponse.next({
+    request,
+  });
 
   const supabase = createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -13,25 +27,31 @@ export async function middleware(request: NextRequest) {
         getAll() {
           return request.cookies.getAll();
         },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
-          response = NextResponse.next({ request });
-          cookiesToSet.forEach(({ name, value, options }) =>
-            response.cookies.set(name, value, options)
-          );
+        setAll(cookiesToSet: CookieToSet[]) {
+          cookiesToSet.forEach(({ name, value }) => {
+            request.cookies.set(name, value);
+          });
+
+          response = NextResponse.next({
+            request,
+          });
+
+          cookiesToSet.forEach(({ name, value, options }) => {
+            response.cookies.set(name, value, options);
+          });
         },
       },
     }
   );
 
-  // Refresh session — keeps auth alive on every request
+  // Refresh session — keeps auth alive on every request.
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
   const { pathname } = request.nextUrl;
 
-  // Protect /admin/* (except /admin/login)
+  // Protect /admin/* except /admin/login.
   if (pathname.startsWith("/admin") && pathname !== "/admin/login") {
     if (!user) {
       const loginUrl = new URL("/admin/login", request.url);
@@ -39,19 +59,23 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(loginUrl);
     }
 
-    // Verify staff record exists and is active
-    const { data: staff } = await supabase
+    // Supabase DB types are not wired perfectly, so cast staff row safely.
+    const { data: staffData } = await (supabase as any)
       .from("staff_users")
       .select("id, is_active, role")
       .eq("id", user.id)
       .single();
 
-    if (!staff || !staff.is_active) {
-      return NextResponse.redirect(new URL("/admin/login?error=inactive", request.url));
+    const staff = staffData as StaffUser | null;
+
+    if (!staff || staff.is_active !== true) {
+      return NextResponse.redirect(
+        new URL("/admin/login?error=inactive", request.url)
+      );
     }
   }
 
-  // Redirect logged-in staff away from /admin/login
+  // Redirect logged-in staff away from /admin/login.
   if (pathname === "/admin/login" && user) {
     return NextResponse.redirect(new URL("/admin", request.url));
   }
@@ -60,5 +84,7 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)"],
+  matcher: [
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+  ],
 };
