@@ -211,6 +211,7 @@ function mapCatalogueRow(row: any): CatalogueProduct {
   const primary =
     images.find((i) => i.is_primary)?.url ??
     [...images].sort((a, b) => a.display_order - b.display_order)[0]?.url ??
+    PRODUCT_IMAGES[row.slug]?.[0] ??
     null;
 
   const cats = (row.product_categories ?? [])
