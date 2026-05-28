@@ -1,0 +1,129 @@
+-- =====================================================================
+-- ASHVAH — Seed Data
+-- =====================================================================
+-- Populates 11 categories + every product currently visible on
+-- https://www.ashvah.in (scraped May 2026). Specs filled in where the
+-- live site provides them; rest left null for staff to fill via admin.
+-- =====================================================================
+
+-- ----------- 11 Categories (display_order matches typical retail flow)
+insert into public.categories (slug, name, description, display_order, seo_title, seo_description) values
+  ('t-shirts',        'T-Shirts',          'Lightweight knit fabrics engineered for breathability, print performance, and dimensional stability across casual and sport-cut tees.', 1, 'T-Shirt Fabric Manufacturers & Suppliers', 'Premium T-shirt fabrics for garment manufacturers, sportswear brands, and resellers. Wide range of knit constructions with consistent quality.'),
+  ('sandos',          'Sandos',            'Featherweight, ribbed, and stretch-engineered fabrics designed for gym vests and sleeveless activewear with high recovery.', 2, 'Sandos Fabric Suppliers', 'Performance Sandos fabrics for gym vests and activewear manufacturers across India.'),
+  ('shorts',          'Shorts',            'Quick-dry, four-way stretch, and performance woven fabrics built for athletic shorts, training shorts, and casual wear.', 3, 'Shorts Fabric Manufacturers', 'Shorts fabric range covering knit, woven and stretch constructions. B2B supply across India.'),
+  ('joggers',         'Joggers',           'Loop-knit, fleece, and structured fabrics with the drape, weight, and stretch profile required for premium joggers.', 4, 'Joggers Fabric Suppliers', 'Premium joggers fabrics — loop knit, fleece, and stretch constructions for garment manufacturers.'),
+  ('lowers',          'Lowers',            'The broadest category in the catalogue — covering trackpants, lowers, leggings, and athleisure bottoms in over a dozen constructions.', 5, 'Lowers Fabric Manufacturers & Suppliers', 'Top Lowers fabric suppliers in Delhi NCR. Wide range including Spandex, Lycra, Sinker, Loop Knit, and Matty fabrics.'),
+  ('cargos',          'Cargos',            'Durable woven and stretch-woven fabrics with the structure and abrasion resistance demanded by cargo and utility wear.', 6, 'Cargos Fabric Suppliers', 'Cargo pants fabrics for garment manufacturers. Durable woven constructions in stock.'),
+  ('track-suits',     'Track Suits',       'Co-ordinated knit and woven fabrics suited for two-piece track suit construction — engineered for movement, washability, and print compatibility.', 7, 'Track Suit Fabric Manufacturers', 'Track suit fabrics for sportswear brands and clothing manufacturers across pan India.'),
+  ('sweat-shirts',    'Sweat Shirts',      'Fleece, loop-back, and brushed knit fabrics with the GSM and hand-feel required for premium sweatshirts and hoodies.', 8, 'Sweat Shirt Fabric Suppliers', 'Sweatshirt and hoodie fabrics — fleece and loop-back constructions for B2B supply.'),
+  ('jackets',         'Jackets',           'Technical shells, woven outers, and bonded constructions engineered for jackets, windcheaters, and outerwear.', 9, 'Jackets Fabric Manufacturers', 'Jacket and outerwear fabrics for manufacturers across India.'),
+  ('sports-kits',     'Sports Kits',       'Sublimation-ready knits, mesh, and interlock fabrics engineered specifically for team kits and uniform production.', 10, 'Sports Kit Fabric Suppliers', 'Sports kit fabrics for team uniform manufacturers — sublimation-ready and dimensionally stable.'),
+  ('lining-designing','Lining & Designing','Supporting fabrics — linings, mesh, accents, and designer overlays — used to finish, line, and detail finished garments.', 11, 'Lining & Designing Fabric Suppliers', 'Lining and designing fabrics for garment manufacturers — mesh, taffeta, and accent overlays.');
+
+-- ----------- Products (real data from live site)
+
+-- Star products with full specs
+insert into public.products (slug, name, short_description, full_description, gsm, width, fabric_type, used_for, is_star, is_customizable, display_order) values
+  ('reebok-knit-fabric',
+   'Reebok Knit Fabric',
+   'Versatile, durable blended knit with a soft hand and high abrasion resistance — built for high-rotation activewear.',
+   'Reebok Knit Fabric is a versatile and durable fabric engineered for a wide range of activewear applications. Its unique blend of natural and synthetic fibres delivers a soft, comfortable feel while retaining toughness and resistance to wear. Suitable for t-shirts, sandos, gym vests and shorts where breathability and durability are equally critical.',
+   170, '35" Tube', 'Knit',
+   ARRAY['T-Shirts','Sandos','Gym Vest','Shorts'],
+   true, true, 1),
+
+  ('ns-crush-tpu',
+   'NS Crush TPU',
+   'Lightweight 4-way stretch performance fabric with TPU finish — engineered for high-mobility lowers and training shorts.',
+   'NS Crush TPU is a technical performance fabric featuring four-way stretch and a refined TPU finish. The construction is engineered for high-mobility garments where recovery, breathability, and weight matter — making it a preferred choice for lowers, shorts, and track suit applications.',
+   135, '60"', 'TPU Knit',
+   ARRAY['Lowers','Shorts','Track Suits'],
+   true, true, 2),
+
+  ('pc-loop-knit',
+   'PC Loop Knit',
+   'Heavyweight poly-cotton loop knit with structured drape — the workhorse fabric for premium joggers and lowers.',
+   'PC Loop Knit is a heavyweight poly-cotton loop-back knit engineered for structure, drape, and durability. Its construction delivers the weight and hand-feel required for premium joggers, lowers, and shorts — making it one of the most consistently specified fabrics in our catalogue.',
+   250, '42" Tube', 'Loop Knit',
+   ARRAY['Lowers','Joggers','Shorts'],
+   true, true, 3);
+
+-- LOWERS category products (full list from live site)
+insert into public.products (slug, name, short_description, fabric_type, used_for, is_customizable, display_order) values
+  ('spandex-dot',        'Spandex Dot',        'Stretch-engineered spandex with dot texture — premium hand for lowers and athleisure.',           'Spandex Knit', ARRAY['Lowers'], true, 10),
+  ('dobby-lycra',        'Dobby Lycra',        'Dobby-weave lycra blend with structured texture and high recovery.',                                'Lycra Weave',  ARRAY['Lowers'], true, 11),
+  ('airjet-sinker',      'Airjet Sinker',      'Airjet-spun sinker construction — clean surface, smooth hand, ideal for everyday lowers.',          'Sinker Knit',  ARRAY['Lowers'], true, 12),
+  ('pc-sinker',          'PC Sinker',          'Poly-cotton sinker with balanced weight and dimensional stability.',                                'Sinker Knit',  ARRAY['Lowers'], true, 13),
+  ('pc-matty',           'PC Matty',           'Poly-cotton matty weave — structured surface with breathability for lowers and trackwear.',         'Matty Weave',  ARRAY['Lowers'], true, 14),
+  ('airjet-loop-knit',   'Airjet Loop Knit',   'Airjet-spun loop knit with refined hand and consistent loop structure.',                            'Loop Knit',    ARRAY['Lowers','Joggers'], true, 15),
+  ('swead-lycra',        'Swead Lycra',        'Lycra-blended fabric with sweat-management properties for active lowers.',                          'Lycra Knit',   ARRAY['Lowers'], true, 16),
+  ('super-soft-lycra',   'Super Soft Lycra',   'Premium soft-handle lycra blend — high recovery, low surface friction.',                            'Lycra Knit',   ARRAY['Lowers'], true, 17),
+  ('spandex-rib',        'Spandex Rib',        'Ribbed spandex with high vertical recovery — used for structured lowers and rib detailing.',        'Rib Knit',     ARRAY['Lowers'], true, 18),
+  ('nylon-terry',        'Nylon Terry',        'Nylon-based terry construction — moisture-managing and abrasion-resistant.',                       'Terry Knit',   ARRAY['Lowers'], true, 19),
+  ('n-s-lycra-p',        'N S Lycra (P)',      'NS lycra blend with premium finish — engineered for lowers and athleisure.',                       'Lycra Knit',   ARRAY['Lowers'], true, 20),
+  ('black-creta',        'Black Creta',        'Solution-dyed black fabric with consistent shade integrity wash after wash.',                       'Knit',         ARRAY['Lowers'], true, 21),
+  ('denim-lycra-fabric', 'Denim Lycra Fabric', 'Denim-look lycra blend — combines the aesthetic of denim with the stretch of lycra.',               'Lycra Weave',  ARRAY['Lowers'], true, 22);
+
+-- ----------- Link products to categories
+-- Star products
+insert into public.product_categories (product_id, category_id)
+select p.id, c.id from public.products p, public.categories c
+where p.slug = 'reebok-knit-fabric' and c.slug in ('t-shirts','sandos','shorts');
+
+insert into public.product_categories (product_id, category_id)
+select p.id, c.id from public.products p, public.categories c
+where p.slug = 'ns-crush-tpu' and c.slug in ('lowers','shorts','track-suits');
+
+insert into public.product_categories (product_id, category_id)
+select p.id, c.id from public.products p, public.categories c
+where p.slug = 'pc-loop-knit' and c.slug in ('lowers','joggers','shorts');
+
+-- All LOWERS products → lowers category
+insert into public.product_categories (product_id, category_id)
+select p.id, c.id from public.products p, public.categories c
+where c.slug = 'lowers' and p.slug in (
+  'spandex-dot','dobby-lycra','airjet-sinker','pc-sinker','pc-matty',
+  'airjet-loop-knit','swead-lycra','super-soft-lycra','spandex-rib',
+  'nylon-terry','n-s-lycra-p','black-creta','denim-lycra-fabric'
+);
+
+-- Airjet Loop Knit also fits joggers
+insert into public.product_categories (product_id, category_id)
+select p.id, c.id from public.products p, public.categories c
+where p.slug = 'airjet-loop-knit' and c.slug = 'joggers';
+
+-- ----------- Testimonials (from live site)
+insert into public.testimonials (author_name, author_location, quote, rating, is_featured, display_order) values
+  ('Gaurav Mehta',     'Surat',   'I have been working with this fabrics supplier for over five years now and I couldn''t be happier with the quality of their products. Their fabrics are always top-notch and their customer service is exceptional. They have a wide variety of fabrics to choose from and they always have the latest trends in stock.', 5, true, 1),
+  ('Rajnish Manjanekar','Pune',   'I was in a bind and needed a specific fabric for a rush order and ASHVAH came through for me. Not only did they have the fabric I needed in stock, but they were able to get it to me in record time. Their attention to detail and customer service is outstanding.', 5, true, 2),
+  ('Rahul Awasthi',    'Delhi',   'I have been working with ASHVAH for all of my fabric needs for my clothing line for the past two years. The quality of their fabrics is consistently great and their prices are very reasonable. They also have a huge variety of fabrics to choose from which makes it easy to find the perfect fabric for my designs.', 5, true, 3),
+  ('Rajiv Gupta',      'Patna',   'I have been a customer of ASHVAH for several years and I have always been impressed with the quality of their fabrics. Their customer service is exceptional and they are always willing to go the extra mile to ensure that I am satisfied with my order.', 5, false, 4),
+  ('Armaan Malik',     'Udaipur', 'I recently started my own sportswear and gym wear business and was in need of a reliable fabric supplier. I found ASHVAH and I couldn''t be happier with my choice. Their fabrics are of high quality and their prices are very reasonable.', 5, false, 5);
+
+-- ----------- Site settings — homepage content blocks
+insert into public.site_settings (key, value, description) values
+  ('hero', jsonb_build_object(
+    'eyebrow', 'House of Fabrics — Est. 2011',
+    'title', 'Performance fabrics, engineered for the manufacturers who build India''s activewear.',
+    'subtitle', 'A pan-India supply of knit, woven, and technical fabrics for gym wear, sportswear, and activewear brands.',
+    'primary_cta_label', 'Explore Fabrics',
+    'primary_cta_href', '/fabrics',
+    'secondary_cta_label', 'Enquire on WhatsApp',
+    'secondary_cta_href', 'https://api.whatsapp.com/send?phone=919053060101'
+  ), 'Homepage hero copy'),
+
+  ('stats', jsonb_build_array(
+    jsonb_build_object('label', 'Years in textiles', 'value', '14+'),
+    jsonb_build_object('label', 'Fabrics in catalogue', 'value', '500+'),
+    jsonb_build_object('label', 'Categories served', 'value', '11'),
+    jsonb_build_object('label', 'Pan India delivery', 'value', 'Yes')
+  ), 'Why-choose-us stat block'),
+
+  ('contact', jsonb_build_object(
+    'address', 'Star Heights, Godown no. 1, Street no. 5, Sheetal Nagar, Jhajjar Road, Rohtak',
+    'phone_primary', '+91 90530 60102',
+    'phone_secondary', '+91 90530 60101',
+    'email', 'info@ashvah.in',
+    'hours', 'Monday to Saturday · 10:00 AM – 05:00 PM. Sunday closed.',
+    'whatsapp_number', '919053060101'
+  ), 'Contact details');

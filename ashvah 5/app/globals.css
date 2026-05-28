@@ -1,0 +1,163 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --font-inter: "Inter", system-ui, sans-serif;
+    --font-display: "Inter Tight", "Inter", system-ui, sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+    /* Selection */
+    --selection-bg: #111111;
+    --selection-fg: #FAF9F6;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-bone text-graphite font-sans;
+    font-feature-settings: "ss01", "cv11", "ss03";
+  }
+
+  ::selection {
+    background: var(--selection-bg);
+    color: var(--selection-fg);
+  }
+
+  /* Editorial type defaults */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display text-graphite;
+    font-feature-settings: "ss01", "cv11";
+  }
+
+  /* Crisp focus rings — keyboard only */
+  :focus-visible {
+    @apply outline-none ring-2 ring-ink ring-offset-2 ring-offset-bone;
+  }
+
+  /* Remove default button styling */
+  button {
+    @apply cursor-pointer;
+  }
+}
+
+@layer components {
+  /* Hairline divider — used everywhere */
+  .hairline {
+    @apply border-t border-hairline;
+  }
+
+  .hairline-l {
+    @apply border-l border-hairline;
+  }
+
+  /* Editorial eyebrow label — small caps, tracked */
+  .eyebrow {
+    @apply text-eyebrow uppercase text-silver;
+  }
+
+  /* Spec sheet row — mono label, sans value */
+  .spec-row {
+    @apply flex items-baseline justify-between gap-4 border-b border-hairline py-3;
+  }
+
+  .spec-row dt {
+    @apply font-mono text-xs uppercase tracking-wider text-silver;
+  }
+
+  .spec-row dd {
+    @apply text-sm text-graphite;
+  }
+
+  /* Primary CTA — solid graphite, machined */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 bg-graphite px-6 py-3 text-sm font-medium tracking-wide text-bone transition-all duration-300 ease-editorial hover:bg-graphite-soft active:scale-[0.98];
+    border-radius: 2px;
+  }
+
+  /* Secondary CTA — 1px outline */
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 border border-graphite bg-transparent px-6 py-3 text-sm font-medium tracking-wide text-graphite transition-all duration-300 ease-editorial hover:bg-graphite hover:text-bone active:scale-[0.98];
+    border-radius: 2px;
+  }
+
+  /* Ghost link with underline animation */
+  .link-arrow {
+    @apply inline-flex items-center gap-1.5 text-sm font-medium text-graphite transition-colors hover:text-ink;
+  }
+
+  /* Frosted-glass sticky header */
+  .glass-header {
+    background: rgba(250, 249, 246, 0.72);
+    backdrop-filter: saturate(1.4) blur(16px);
+    -webkit-backdrop-filter: saturate(1.4) blur(16px);
+    border-bottom: 1px solid rgba(229, 229, 229, 0.6);
+  }
+
+  /* Container that pulls content edge-to-edge with side rules */
+  .editorial-container {
+    @apply mx-auto w-full max-w-[1440px] px-5 sm:px-8 lg:px-12;
+  }
+
+  /* Section frame — top + bottom hairline, big padding */
+  .section {
+    @apply py-section;
+  }
+
+  /* Fabric-weave decorative overlay — barely visible texture */
+  .weave-bg {
+    background-image: var(--tw-bg-weave-light, none);
+    background-image:
+      repeating-linear-gradient(45deg, rgba(17, 17, 17, 0.012) 0 1px, transparent 1px 8px),
+      repeating-linear-gradient(-45deg, rgba(17, 17, 17, 0.012) 0 1px, transparent 1px 8px);
+  }
+}
+
+@layer utilities {
+  /* Number tabular alignment for spec sheets */
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Hide native cursor when custom cursor is active (fine pointers only) */
+  .custom-cursor-active,
+  .custom-cursor-active a,
+  .custom-cursor-active button,
+  .custom-cursor-active label,
+  .custom-cursor-active input,
+  .custom-cursor-active textarea,
+  .custom-cursor-active [role="button"] {
+    cursor: none;
+  }
+
+  /* Tilt container — used by star product swatches */
+  .tilt-3d {
+    transform-style: preserve-3d;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* Grain overlay for filmic depth */
+  .grain::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.04;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* Hide scrollbar but allow scroll */
+  .scrollbar-none {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+}
