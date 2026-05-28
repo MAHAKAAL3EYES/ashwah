@@ -1,14 +1,8 @@
 /**
  * Real ASHVAH brand assets, sourced from the live site (ashvah.in).
  *
- * STRATEGY
- * --------
- * By default these point at the live ashvah.in URLs so real imagery shows up
- * immediately with zero setup. To self-host later, run:
- *
- *     npm run fetch-assets
- *
- * Then set NEXT_PUBLIC_USE_LOCAL_ASSETS=true in your env.
+ * Default mode uses remote ashvah.in URLs.
+ * Keep NEXT_PUBLIC_USE_LOCAL_ASSETS=false on Vercel unless local files exist.
  */
 
 const USE_LOCAL = process.env.NEXT_PUBLIC_USE_LOCAL_ASSETS === "true";
@@ -26,8 +20,10 @@ export const LOGO = asset(
 
 /** Product image URLs keyed by product slug. */
 export const PRODUCT_IMAGES: Record<string, string[]> = {
-  "pc-loop-knit": img([305, 304, 303]),
+  // Product detail images from ASHVAH detail pages
+  "pc-loop-knit": imgJpg([305, 304, 303]),
 
+  // Gallery/product fallbacks from ASHVAH gallery page — these are PNG, not JPG
   "reebok-knit-fabric": gallery(["img-1-0", "img-1-1", "img-1-2"]),
   "ns-crush-tpu": gallery(["img-5-0", "img-5-1", "img-5-2"]),
 
@@ -55,6 +51,7 @@ export const PRODUCT_IMAGES: Record<string, string[]> = {
   "mesh-fabric": gallery(["img-185-0"]),
   "platinum-milange": gallery(["img-186-0"]),
 
+  // These old site images use JFIF
   "ottoman-memory": gallery(["img-15-0"], "jfif"),
   "ns-micro": gallery(["img-16-0"], "jfif"),
   "ns-butter": gallery(["img-22-0"], "jfif"),
@@ -112,7 +109,7 @@ export const GALLERY_IMAGES: string[] = [
 
 // helpers -----------------------------------------------------------
 
-function img(ids: number[]): string[] {
+function imgJpg(ids: number[]): string[] {
   return ids.map((id) =>
     asset(
       `/assets/uploads/product_photo/img-${id}-0.jpg`,
@@ -121,11 +118,11 @@ function img(ids: number[]): string[] {
   );
 }
 
-function gallery(names: string[], ext = "jpg"): string[] {
+function gallery(names: string[], ext = "png"): string[] {
   return names.map((name) => galleryUrl(name, ext));
 }
 
-function galleryUrl(name: string, ext = "jpg"): string {
+function galleryUrl(name: string, ext = "png"): string {
   return asset(
     `/assets/uploads/product_photo/${name}.${ext}`,
     `/products/${name}.${ext}`
