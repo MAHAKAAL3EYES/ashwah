@@ -4,6 +4,11 @@ import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
+type StaffUser = {
+  id: string;
+  is_active: boolean | null;
+};
+
 export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -20,7 +25,10 @@ export function LoginForm() {
     setErrorMsg("");
 
     try {
-      const supabase = createClient();
+      // Supabase DB types are not wired correctly in this project,
+      // so we cast to any to prevent TypeScript from treating table rows as never.
+      const supabase = createClient() as any;
+
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -38,13 +46,15 @@ export function LoginForm() {
       } = await supabase.auth.getUser();
 
       if (user) {
-        const { data: staff } = await supabase
+        const { data: staffData } = await supabase
           .from("staff_users")
           .select("id, is_active")
           .eq("id", user.id)
           .single();
 
-        if (!staff || !staff.is_active) {
+        const staff = staffData as StaffUser | null;
+
+        if (!staff || staff.is_active !== true) {
           await supabase.auth.signOut();
           setStatus("error");
           setErrorMsg("This account is not an active staff member.");
