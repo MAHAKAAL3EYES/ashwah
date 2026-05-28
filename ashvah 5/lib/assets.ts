@@ -37,10 +37,12 @@ export const PRODUCT_IMAGES: Record<string, string[]> = {
 
 /** Gallery image URLs (from /gallery.php, pages 1–2). */
 export const GALLERY_IMAGES: string[] = [
-  ...["img-1-0", "img-1-1", "img-1-2", "img-1-3"].map(galleryUrl),
-  ...["img-5-0", "img-5-1", "img-5-2"].map(galleryUrl),
-  ...["img-15-0", "img-16-0", "img-22-0", "img-23-0"].map((n) =>
-    galleryUrl(n, "jfif")
+  ...["img-1-0", "img-1-1", "img-1-2", "img-1-3"].map((name) =>
+    galleryUrl(name)
+  ),
+  ...["img-5-0", "img-5-1", "img-5-2"].map((name) => galleryUrl(name)),
+  ...["img-15-0", "img-16-0", "img-22-0", "img-23-0"].map((name) =>
+    galleryUrl(name, "jfif")
   ),
   ...[
     "img-132-0",
@@ -64,7 +66,7 @@ export const GALLERY_IMAGES: string[] = [
     "img-184-0",
     "img-185-0",
     "img-186-0",
-  ].map((n) => galleryUrl(n)),
+  ].map((name) => galleryUrl(name)),
 ];
 
 // helpers -----------------------------------------------------------
