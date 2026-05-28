@@ -1,10 +1,23 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { LoginForm } from "@/components/admin/LoginForm";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Staff Login",
   robots: { index: false, follow: false },
 };
+
+function LoginFormFallback() {
+  return (
+    <div className="space-y-4">
+      <div className="h-[68px] animate-pulse border border-hairline bg-black/5" />
+      <div className="h-[68px] animate-pulse border border-hairline bg-black/5" />
+      <div className="h-11 animate-pulse bg-black/10" />
+    </div>
+  );
+}
 
 export default function AdminLoginPage() {
   return (
@@ -24,8 +37,11 @@ export default function AdminLoginPage() {
               Secure login
             </p>
           </div>
+
           <div className="p-6">
-            <LoginForm />
+            <Suspense fallback={<LoginFormFallback />}>
+              <LoginForm />
+            </Suspense>
           </div>
         </div>
 
