@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
+import { primaryProductImage } from "@/lib/assets";
 import type {
-import { productImage } from "@/lib/assets";
   Category,
   Product,
   Testimonial,
@@ -62,7 +62,7 @@ export async function getStarProducts(): Promise<
         images.find((i) => i.is_primary)?.url ??
         [...images].sort((a, b) => a.display_order - b.display_order)[0]
           ?.url ??
-        productImage(p.slug, p.fabric_type ?? null);
+        primaryProductImage(p.slug);
 
       const { product_images, ...rest } = p;
 
@@ -231,7 +231,9 @@ const FALLBACK_CATEGORIES: Category[] = [
   updated_at: "",
 }));
 
-const FALLBACK_STAR_PRODUCTS: Array<Product & { primary_image_url: string | null }> = [
+const FALLBACK_STAR_PRODUCTS: Array<
+  Product & { primary_image_url: string | null }
+> = [
   {
     id: "fallback-reebok-knit-fabric",
     slug: "reebok-knit-fabric",
@@ -255,7 +257,7 @@ const FALLBACK_STAR_PRODUCTS: Array<Product & { primary_image_url: string | null
     created_by: null,
     created_at: "",
     updated_at: "",
-    primary_image_url: "https://images.unsplash.com/photo-1643313262763-4056bfa99dd7?auto=format&fit=crop&w=1200&q=80",
+    primary_image_url: primaryProductImage("reebok-knit-fabric"),
   },
   {
     id: "fallback-ns-crush-tpu",
@@ -280,7 +282,7 @@ const FALLBACK_STAR_PRODUCTS: Array<Product & { primary_image_url: string | null
     created_by: null,
     created_at: "",
     updated_at: "",
-    primary_image_url: "https://images.unsplash.com/photo-1636715986446-d58f0f9b3916?auto=format&fit=crop&w=1200&q=80",
+    primary_image_url: primaryProductImage("ns-crush-tpu"),
   },
   {
     id: "fallback-pc-loop-knit",
@@ -305,7 +307,7 @@ const FALLBACK_STAR_PRODUCTS: Array<Product & { primary_image_url: string | null
     created_by: null,
     created_at: "",
     updated_at: "",
-    primary_image_url: "https://images.unsplash.com/photo-1643313262763-4056bfa99dd7?auto=format&fit=crop&w=1200&q=80",
+    primary_image_url: primaryProductImage("pc-loop-knit"),
   },
 ];
 
