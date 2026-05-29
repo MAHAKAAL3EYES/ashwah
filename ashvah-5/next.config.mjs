@@ -12,6 +12,11 @@ const nextConfig = {
         hostname: "ashvah.in",
         pathname: "/assets/uploads/**",
       },
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+        pathname: "/**",
+      },
     ],
   },
 };

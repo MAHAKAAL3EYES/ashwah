@@ -1,8 +1,10 @@
 import Link from "next/link";
+import Image from "next/image";
 import { FabricRibbonClient } from "@/components/3d/FabricRibbonClient";
 import { MaskReveal } from "@/components/ui/MaskReveal";
 import { Magnetic } from "@/components/ui/Magnetic";
 import { HeroScrollCue } from "@/components/sections/HeroScrollCue";
+import { HERO_IMAGES } from "@/lib/assets";
 import type { HeroContent } from "@/types/database";
 
 interface HeroProps {
@@ -12,16 +14,30 @@ interface HeroProps {
 export function Hero({ hero }: HeroProps) {
   return (
     <section className="relative min-h-[calc(100vh-72px)] overflow-hidden grain">
-      {/* 3D layer */}
+      {/* Hero backdrop — real fabric photo, sits beneath the 3D ribbon so
+          the hero is never empty (loading, mobile, no-WebGL all fall back
+          gracefully to this image). */}
       <div className="pointer-events-none absolute inset-0 z-0" aria-hidden>
         <div className="absolute inset-y-0 right-0 w-full md:w-[68%] lg:w-[62%]">
+          <Image
+            src={HERO_IMAGES.primary}
+            alt=""
+            fill
+            priority
+            sizes="(max-width: 768px) 100vw, 62vw"
+            className="object-cover opacity-90"
+          />
+        </div>
+        {/* 3D ribbon overlays the photo — adds movement once loaded */}
+        <div className="absolute inset-y-0 right-0 w-full mix-blend-multiply md:w-[68%] lg:w-[62%]">
           <FabricRibbonClient />
         </div>
+        {/* Left-to-right wash so the text remains readable */}
         <div
           className="absolute inset-0"
           style={{
             background:
-              "linear-gradient(90deg, #FAF9F6 0%, rgba(250,249,246,0.92) 35%, rgba(250,249,246,0.4) 60%, rgba(250,249,246,0.1) 100%)",
+              "linear-gradient(90deg, #FAF9F6 0%, rgba(250,249,246,0.95) 32%, rgba(250,249,246,0.55) 58%, rgba(250,249,246,0.15) 100%)",
           }}
         />
       </div>

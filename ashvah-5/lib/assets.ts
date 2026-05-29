@@ -133,3 +133,30 @@ function galleryUrl(name: string, ext = "png"): string {
 export function primaryProductImage(slug: string): string | null {
   return PRODUCT_IMAGES[slug]?.[0] ?? null;
 }
+
+/**
+ * Hero / atmosphere imagery — verified free Unsplash photos.
+ *
+ * Each ID below was confirmed against Unsplash before commit (free licence,
+ * not Unsplash+ premium). The pattern uses Unsplash's CDN with format/quality/
+ * width controls so Next/Image can serve appropriate sizes per device.
+ *
+ * Photo credits (Unsplash licence — no attribution required, but documented
+ * here for record):
+ *   - primary:   engin akyurt  (canvas fabric macro, grey)
+ *   - secondary: engin akyurt  (fabric texture close-up, white/grey)
+ *   - detail:    Karen Bullaro (canvas weave texture, white)
+ */
+function unsplash(id: string, w = 1600, q = 80): string {
+  return `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${w}&q=${q}`;
+}
+
+export const HERO_IMAGES = {
+  /** Primary hero backdrop — grey canvas macro, the moody fabric house feel */
+  primary: unsplash("1650406268594-c5d310f6fbce", 1800, 82),
+  /** Secondary — fabric weave close-up, used as section accent */
+  secondary: unsplash("1636715986446-d58f0f9b3916", 1400, 80),
+  /** Detail — white canvas texture, lighter accent variant */
+  detail: unsplash("1693592560460-60dc6d52dc21", 1200, 80),
+};
+
