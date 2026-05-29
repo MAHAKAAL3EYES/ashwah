@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import type {
+import { productImage } from "@/lib/assets";
   Category,
   Product,
   Testimonial,
@@ -61,7 +62,7 @@ export async function getStarProducts(): Promise<
         images.find((i) => i.is_primary)?.url ??
         [...images].sort((a, b) => a.display_order - b.display_order)[0]
           ?.url ??
-        null;
+        productImage(p.slug, p.fabric_type ?? null);
 
       const { product_images, ...rest } = p;
 
@@ -254,7 +255,7 @@ const FALLBACK_STAR_PRODUCTS: Array<Product & { primary_image_url: string | null
     created_by: null,
     created_at: "",
     updated_at: "",
-    primary_image_url: null,
+    primary_image_url: "https://images.unsplash.com/photo-1643313262763-4056bfa99dd7?auto=format&fit=crop&w=1200&q=80",
   },
   {
     id: "fallback-ns-crush-tpu",
@@ -279,7 +280,7 @@ const FALLBACK_STAR_PRODUCTS: Array<Product & { primary_image_url: string | null
     created_by: null,
     created_at: "",
     updated_at: "",
-    primary_image_url: null,
+    primary_image_url: "https://images.unsplash.com/photo-1636715986446-d58f0f9b3916?auto=format&fit=crop&w=1200&q=80",
   },
   {
     id: "fallback-pc-loop-knit",
@@ -304,7 +305,7 @@ const FALLBACK_STAR_PRODUCTS: Array<Product & { primary_image_url: string | null
     created_by: null,
     created_at: "",
     updated_at: "",
-    primary_image_url: null,
+    primary_image_url: "https://images.unsplash.com/photo-1643313262763-4056bfa99dd7?auto=format&fit=crop&w=1200&q=80",
   },
 ];
 

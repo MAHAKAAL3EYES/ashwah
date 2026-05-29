@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { cn, whatsappLink } from "@/lib/utils";
+import { LOGO } from "@/lib/assets";
 
 const NAV = [
   { label: "Home", href: "/" },
@@ -33,15 +34,23 @@ export function Header() {
       )}
     >
       <div className="editorial-container flex h-[72px] items-center justify-between">
-        {/* Wordmark */}
+        {/* Brand — official logo + wordmark */}
         <Link
           href="/"
-          className="font-display text-lg font-semibold tracking-tight text-graphite"
+          className="flex items-center gap-2.5"
           aria-label="ASHVAH — Home"
         >
-          ASHVAH
-          <span className="ml-2 hidden text-eyebrow text-silver sm:inline">
-            House of Fabrics
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={LOGO}
+            alt="ASHVAH"
+            className="h-9 w-auto object-contain"
+          />
+          <span className="font-display text-lg font-semibold tracking-tight text-graphite">
+            ASHVAH
+            <span className="ml-2 hidden text-eyebrow text-silver sm:inline">
+              House of Fabrics
+            </span>
           </span>
         </Link>
 

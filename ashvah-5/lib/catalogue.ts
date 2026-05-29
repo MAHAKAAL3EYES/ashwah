@@ -4,7 +4,7 @@ import {
   FALLBACK_ALL_PRODUCTS,
   FALLBACK_CATEGORIES_FULL,
 } from "@/lib/fallback-data";
-import { PRODUCT_IMAGES } from "@/lib/assets";
+import { productImage, productGallery } from "@/lib/assets";
 
 export interface ProductFilters {
   category?: string; // slug
@@ -124,9 +124,10 @@ export async function getProductBySlug(
     images = [];
   }
 
-  // Fallback: build gallery from PRODUCT_IMAGES (real ashvah.in URLs)
+  // Fallback: build gallery from curated type-matched photos so the detail
+  // page always has images (never empty).
   if (images.length === 0) {
-    const urls = PRODUCT_IMAGES[product.slug] ?? [];
+    const urls = productGallery(product.slug, product.fabric_type);
 
     images = urls.map((url, i) => ({
       id: `${product.slug}-img-${i}`,
@@ -211,8 +212,7 @@ function mapCatalogueRow(row: any): CatalogueProduct {
   const primary =
     images.find((i) => i.is_primary)?.url ??
     [...images].sort((a, b) => a.display_order - b.display_order)[0]?.url ??
-    PRODUCT_IMAGES[row.slug]?.[0] ??
-    null;
+    productImage(row.slug, row.fabric_type ?? null);
 
   const cats = (row.product_categories ?? [])
     .map((pc: any) => pc.categories)

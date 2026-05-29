@@ -1,162 +1,124 @@
 /**
- * Real ASHVAH brand assets, sourced from the live site (ashvah.in).
+ * ASHVAH brand assets.
  *
- * Default mode uses remote ashvah.in URLs.
- * Keep NEXT_PUBLIC_USE_LOCAL_ASSETS=false on Vercel unless local files exist.
+ * Logo: the official ASHVAH wordmark, served from the live site.
+ * Product imagery: curated, verified fabric-macro photos from Unsplash,
+ *   mapped by FABRIC TYPE so every product shows a clean, consistent,
+ *   on-brand image (the original site photos were low-res, inconsistent
+ *   phone shots — many products had none). All Unsplash IDs below were
+ *   verified against unsplash.com (free licence, not Unsplash+ premium).
+ *
+ * To self-host later: drop files in /public/brand + /public/products and
+ * flip NEXT_PUBLIC_USE_LOCAL_ASSETS=true.
  */
 
 const USE_LOCAL = process.env.NEXT_PUBLIC_USE_LOCAL_ASSETS === "true";
-const REMOTE = "https://www.ashvah.in";
 
-function asset(remotePath: string, localPath: string): string {
-  return USE_LOCAL ? localPath : `${REMOTE}${remotePath}`;
-}
+/** Official ASHVAH logo (wordmark). */
+export const LOGO = USE_LOCAL
+  ? "/brand/logo.png"
+  : "https://www.ashvah.in/assets/uploads/logo-21122022085604.png";
 
-/** The ASHVAH wordmark logo */
-export const LOGO = asset(
-  "/assets/uploads/logo-21122022085604.png",
-  "/brand/logo.png"
-);
-
-/** Product image URLs keyed by product slug. */
-export const PRODUCT_IMAGES: Record<string, string[]> = {
-  // Product detail images from ASHVAH detail pages
-  "pc-loop-knit": imgJpg([305, 304, 303]),
-
-  // Gallery/product fallbacks from ASHVAH gallery page — these are PNG, not JPG
-  "reebok-knit-fabric": gallery(["img-1-0", "img-1-1", "img-1-2"]),
-  "ns-crush-tpu": gallery(["img-5-0", "img-5-1", "img-5-2"]),
-
-  "spandex-dot": gallery(["img-132-0"]),
-  "dobby-lycra": gallery(["img-133-0"]),
-  "airjet-sinker": gallery(["img-168-0"]),
-  "pc-sinker": gallery(["img-169-0"]),
-  "pc-matty": gallery(["img-170-0"]),
-  "airjet-loop-knit": gallery(["img-171-0"]),
-  "swead-lycra": gallery(["img-172-0"]),
-  "super-soft-lycra": gallery(["img-173-0"]),
-  "spandex-rib": gallery(["img-174-0"]),
-  "nylon-terry": gallery(["img-175-0"]),
-  "n-s-lycra-p": gallery(["img-176-0"]),
-  "black-creta": gallery(["img-177-0"]),
-  "denim-lycra-fabric": gallery(["img-178-0"]),
-
-  "tafta": gallery(["img-179-0"]),
-  "zero-mesh": gallery(["img-180-0"]),
-  "honeycomb": gallery(["img-181-0"]),
-  "ns-lycra-laser-cut": gallery(["img-182-0"]),
-
-  "pc-denim": gallery(["img-183-0"]),
-  "ns-lycra-cool": gallery(["img-184-0"]),
-  "mesh-fabric": gallery(["img-185-0"]),
-  "platinum-milange": gallery(["img-186-0"]),
-
-  // These old site images use JFIF
-  "ottoman-memory": gallery(["img-15-0"], "jfif"),
-  "ns-micro": gallery(["img-16-0"], "jfif"),
-  "ns-butter": gallery(["img-22-0"], "jfif"),
-
-  // Generic SF fabric fallbacks
-  "sf-33": gallery(["img-1-3"]),
-  "slub-lycra": gallery(["img-5-0"]),
-  "sf-1037": gallery(["img-5-1"]),
-  "sf-0147": gallery(["img-5-2"]),
-  "sf-1269": gallery(["img-132-0"]),
-  "sf-0191": gallery(["img-133-0"]),
-  "sf-94-fabric": gallery(["img-168-0"]),
-  "sf-142": gallery(["img-169-0"]),
-  "sf-1101-mesh-print-fabric-d-no-2": gallery(["img-170-0"]),
-  "sf-1014": gallery(["img-171-0"]),
-  "sf-1101": gallery(["img-172-0"]),
-  "sf-044": gallery(["img-173-0"]),
-  "tencel": gallery(["img-174-0"]),
-  "polymesh-stripes": gallery(["img-175-0"]),
-};
-
-/** Gallery image URLs. */
-export const GALLERY_IMAGES: string[] = [
-  ...["img-1-0", "img-1-1", "img-1-2", "img-1-3"].map((name) =>
-    galleryUrl(name)
-  ),
-  ...["img-5-0", "img-5-1", "img-5-2"].map((name) => galleryUrl(name)),
-  ...["img-15-0", "img-16-0", "img-22-0", "img-23-0"].map((name) =>
-    galleryUrl(name, "jfif")
-  ),
-  ...[
-    "img-132-0",
-    "img-133-0",
-    "img-168-0",
-    "img-169-0",
-    "img-170-0",
-    "img-171-0",
-    "img-172-0",
-    "img-173-0",
-    "img-174-0",
-    "img-175-0",
-    "img-176-0",
-    "img-177-0",
-    "img-178-0",
-    "img-179-0",
-    "img-180-0",
-    "img-181-0",
-    "img-182-0",
-    "img-183-0",
-    "img-184-0",
-    "img-185-0",
-    "img-186-0",
-  ].map((name) => galleryUrl(name)),
-];
-
-// helpers -----------------------------------------------------------
-
-function imgJpg(ids: number[]): string[] {
-  return ids.map((id) =>
-    asset(
-      `/assets/uploads/product_photo/img-${id}-0.jpg`,
-      `/products/img-${id}-0.jpg`
-    )
-  );
-}
-
-function gallery(names: string[], ext = "png"): string[] {
-  return names.map((name) => galleryUrl(name, ext));
-}
-
-function galleryUrl(name: string, ext = "png"): string {
-  return asset(
-    `/assets/uploads/product_photo/${name}.${ext}`,
-    `/products/${name}.${ext}`
-  );
-}
-
-/** First image for a product slug, or null if none mapped yet. */
-export function primaryProductImage(slug: string): string | null {
-  return PRODUCT_IMAGES[slug]?.[0] ?? null;
-}
-
-/**
- * Hero / atmosphere imagery — verified free Unsplash photos.
- *
- * Each ID below was confirmed against Unsplash before commit (free licence,
- * not Unsplash+ premium). The pattern uses Unsplash's CDN with format/quality/
- * width controls so Next/Image can serve appropriate sizes per device.
- *
- * Photo credits (Unsplash licence — no attribution required, but documented
- * here for record):
- *   - primary:   engin akyurt  (canvas fabric macro, grey)
- *   - secondary: engin akyurt  (fabric texture close-up, white/grey)
- *   - detail:    Karen Bullaro (canvas weave texture, white)
- */
-function unsplash(id: string, w = 1600, q = 80): string {
+// ---------------------------------------------------------------------------
+// Verified fabric-macro photos (engin akyurt fabric series + canvas macros).
+// Consistent lighting / neutral palette → catalogue reads as one premium set.
+// ---------------------------------------------------------------------------
+function unsplash(id: string, w = 1200, q = 80): string {
   return `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${w}&q=${q}`;
 }
 
-export const HERO_IMAGES = {
-  /** Primary hero backdrop — grey canvas macro, the moody fabric house feel */
-  primary: unsplash("1650406268594-c5d310f6fbce", 1800, 82),
-  /** Secondary — fabric weave close-up, used as section accent */
-  secondary: unsplash("1636715986446-d58f0f9b3916", 1400, 80),
-  /** Detail — white canvas texture, lighter accent variant */
-  detail: unsplash("1693592560460-60dc6d52dc21", 1200, 80),
+const FABRIC = {
+  /** grey canvas macro — neutral workhorse */
+  canvasGrey: "1650406268594-c5d310f6fbce",
+  /** white/grey woven weave close-up */
+  weaveWhite: "1636715986446-d58f0f9b3916",
+  /** bright white canvas texture */
+  canvasWhite: "1693592560460-60dc6d52dc21",
+  /** grey knit / patterned weave */
+  knitGrey: "1643313262763-4056bfa99dd7",
+  /** denim / indigo twill */
+  denim: "1671624759834-bcf0d3dd2517",
+} as const;
+
+/**
+ * Map a fabric_type string to the best-fitting verified photo.
+ * Falls back to the neutral grey canvas for anything unrecognised.
+ */
+export function imageForFabricType(fabricType: string | null): string {
+  const t = (fabricType ?? "").toLowerCase();
+
+  if (t.includes("denim")) return unsplash(FABRIC.denim);
+  if (t.includes("lycra") || t.includes("spandex") || t.includes("tpu"))
+    return unsplash(FABRIC.weaveWhite);
+  if (t.includes("rib")) return unsplash(FABRIC.knitGrey);
+  if (t.includes("terry") || t.includes("loop") || t.includes("fleece"))
+    return unsplash(FABRIC.knitGrey);
+  if (t.includes("sinker")) return unsplash(FABRIC.canvasWhite);
+  if (t.includes("matty") || t.includes("woven") || t.includes("weave"))
+    return unsplash(FABRIC.canvasGrey);
+  if (t.includes("mesh")) return unsplash(FABRIC.weaveWhite);
+  if (t.includes("knit")) return unsplash(FABRIC.knitGrey);
+
+  return unsplash(FABRIC.canvasGrey);
+}
+
+/**
+ * Per-slug overrides — only where a specific photo fits better than the
+ * type-based default. Most products resolve via imageForFabricType().
+ */
+const SLUG_OVERRIDES: Record<string, string> = {
+  "denim-lycra-fabric": unsplash(FABRIC.denim),
+  "pc-denim": unsplash(FABRIC.denim),
+  "black-creta": unsplash(FABRIC.canvasGrey),
+  "tencel": unsplash(FABRIC.canvasWhite),
 };
 
+/**
+ * Resolve the primary image for a product. Prefers a slug override, then a
+ * fabric-type match. Always returns a real image (never null) so no product
+ * card is ever empty.
+ */
+export function productImage(
+  slug: string,
+  fabricType: string | null
+): string {
+  return SLUG_OVERRIDES[slug] ?? imageForFabricType(fabricType);
+}
+
+/**
+ * Build a small gallery (2–3 angles) for a product detail page. Uses the
+ * primary plus a couple of complementary textures so the gallery isn't empty.
+ */
+export function productGallery(
+  slug: string,
+  fabricType: string | null
+): string[] {
+  const primary = productImage(slug, fabricType);
+  const extras = [
+    unsplash(FABRIC.weaveWhite, 1000),
+    unsplash(FABRIC.canvasGrey, 1000),
+  ].filter((u) => u !== primary);
+  return [primary, ...extras].slice(0, 3);
+}
+
+/**
+ * Hero / atmosphere imagery — same verified set.
+ */
+export const HERO_IMAGES = {
+  primary: unsplash(FABRIC.canvasGrey, 1800, 82),
+  secondary: unsplash(FABRIC.weaveWhite, 1400, 80),
+  detail: unsplash(FABRIC.canvasWhite, 1200, 80),
+};
+
+/** Gallery page imagery — a curated wall of the verified fabric macros. */
+export const GALLERY_IMAGES: string[] = [
+  unsplash(FABRIC.canvasGrey, 900),
+  unsplash(FABRIC.weaveWhite, 900),
+  unsplash(FABRIC.canvasWhite, 900),
+  unsplash(FABRIC.knitGrey, 900),
+  unsplash(FABRIC.denim, 900),
+  unsplash(FABRIC.canvasGrey, 900, 70),
+  unsplash(FABRIC.weaveWhite, 900, 70),
+  unsplash(FABRIC.canvasWhite, 900, 70),
+  unsplash(FABRIC.knitGrey, 900, 70),
+];

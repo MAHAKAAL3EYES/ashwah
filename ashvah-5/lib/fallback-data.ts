@@ -1,6 +1,6 @@
 import type { Category, Product } from "@/types/database";
 import type { CatalogueProduct } from "@/lib/catalogue";
-import { primaryProductImage } from "@/lib/assets";
+import { productImage } from "@/lib/assets";
 
 /**
  * Local mirror of seed.sql. Used whenever Supabase isn't configured or a query
@@ -69,7 +69,7 @@ function makeProduct(
   );
   return {
     ...base,
-    primary_image_url: primaryProductImage(partial.slug),
+    primary_image_url: productImage(partial.slug, base.fabric_type),
     category_ids: categorySlugs.map((s) => `fallback-${s}`),
     category_slugs: categorySlugs,
     category_names: names,
